@@ -58,7 +58,8 @@ body {
 <script>
 // Ganti 'azarcellstore' dengan username channel Telegram Bosku (tanpa @)
 const channelName = "konter_azarcell"; 
-const proxyUrl = "https://corsproxy.io/?d=" + encodeURIComponent("https://t.me/s/" + channelName);
+// Ganti baris proxyUrl yang lama dengan ini:
+const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent("https://t.me/s/" + channelName);
 
 fetch(proxyUrl)
     .then(response => response.text())
