@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/phosphor-icons/1.4.2/css/phosphor.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    background-color: #e5ddd5; 
+    background-image: url('https://web.telegram.org/a/assets/bg-pattern-light.svg');
+    font-family: 'Roboto', sans-serif;
+    padding: 12px;
+}
+.msg-bubble {
+    background: #ffffff;
+    border-radius: 12px 12px 12px 0px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    position: relative;
+    word-break: break-word;
+}
+.msg-sender {
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.msg-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #111827;
+    white-space: pre-wrap;
+}
+.msg-meta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #8b9cb0;
+    margin-top: 4px;
+}
+.loading { text-align: center; padding: 20px; color: #555; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div id="telegram-feed">
+    <div class="loading">Sedang memuat informasi... 🔄</div>
+</div>
+
+<script>
+// Ganti 'azarcellstore' dengan username channel Telegram Bosku (tanpa @)
+const channelName = "konter_azarcell"; 
+const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://t.me/s/" + channelName);
+
+fetch(proxyUrl)
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'html');
+        const messages = doc.querySelectorAll('.tgme_widget_message');
+        
+        const feedContainer = document.getElementById('telegram-feed');
+        if (messages.length > 0) {
+            feedContainer.innerHTML = '';
+            messages.forEach(msg => {
+                const textEl = msg.querySelector('.tgme_widget_message_text');
+                const text = textEl ? textEl.innerHTML : '';
+                
+                const timeEl = msg.querySelector('.tgme_widget_message_date time');
+                const time = timeEl ? timeEl.getAttribute('datetime').split('T')[1].substring(0,5) : '';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'msg-bubble';
+                bubble.innerHTML = `
+                    <div class="msg-sender">
+                        TokoAja Info <i class="ph-fill ph-check-circle" style="color: #3b82f6;"></i>
+                    </div>
+                    <div class="msg-text">${text}</div>
+                    <div class="msg-meta">
+                        <i class="ph-fill ph-eye"></i> Terkini &nbsp; ${time}
+                    </div>
+                `;
+                feedContainer.appendChild(bubble);
+            });
+        } else {
+            feedContainer.innerHTML = '<div class="loading">Gagal memuat pesan atau channel kosong.</div>';
+        }
+    })
+    .catch(err => {
+        document.getElementById('telegram-feed').innerHTML = '<div class="loading">Gagal menyambungkan ke server.</div>';
+    });
+</script>
+
+</body>
+</html>
